@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(dotnet build:*)",
+      "Bash(/mnt/c/Program\\ Files/dotnet/dotnet.exe build:*)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe run --project tools/TrelloSync -- --help)",
+      "Bash(/mnt/c/Program\\ Files/dotnet/dotnet.exe new:*)",
+      "Bash(/mnt/c/Program\\ Files/dotnet/dotnet.exe sln:*)",
+      "Bash(/mnt/c/Program\\ Files/dotnet/dotnet.exe run:*)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe new classlib -n CleanApi.Domain -o src/CleanApi.Domain -f net9.0)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe new:*)",
+      "Bash(/mnt/c/Program\\ Files/dotnet/dotnet.exe add:*)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe add:*)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe build src/CleanApi.Application)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe run --project tools/TrelloSync -- push)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe build:*)",
+      "Bash(/mnt/c/Program Files/dotnet/dotnet.exe test tests/CleanApi.UnitTests --verbosity normal)",
+      "Bash(find:*)",
+      "Bash(node --version)",
+      "Bash(npm --version:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(printf:*)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(yes:*)",
+      "Bash(timeout 120 npx create-next-app@latest:*)",
+      "Bash(npm install)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm install:*)",
+      "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" run --project /mnt/c/Users/angelo.nestola/Desktop/Personal/Development/BoilerPlate/tools/TrelloSync -- push)",
+      "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" run --project tools/TrelloSync -- push)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

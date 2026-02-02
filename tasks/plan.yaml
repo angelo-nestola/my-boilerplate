@@ -1,0 +1,494 @@
+project: CleanApi
+version: "1.0"
+
+phases:
+  - id: phase-1
+    name: "Phase 1: Solution Structure"
+    tasks:
+      - id: task-1-1
+        title: "Setup solution and projects"
+        description: |
+          Creare la struttura della solution seguendo Clean Architecture:
+          - Domain: entità e interfacce base (nessuna dipendenza)
+          - Application: use cases, DTOs, validators (dipende da Domain)
+          - Infrastructure: EF Core, Identity, servizi esterni (dipende da Application)
+          - WebApi: controllers, middleware, configurazione (dipende da Infrastructure)
+          - UnitTests: test xUnit per Application layer
+
+          Configurare le reference tra progetti seguendo la regola delle dipendenze verso l'interno.
+        status: done
+        labels:
+          - setup
+        subtasks:
+          - Create CleanApi.sln
+          - Create CleanApi.Domain project (net9.0, no dependencies)
+          - Create CleanApi.Application project (references Domain)
+          - Create CleanApi.Infrastructure project (references Application)
+          - Create CleanApi.WebApi project (references Infrastructure)
+          - Create CleanApi.UnitTests project (references Application)
+          - Configure project references following dependency rule
+
+  - id: phase-2
+    name: "Phase 2: Domain Layer"
+    tasks:
+      - id: task-2-1
+        title: "Create base entities and interfaces"
+        description: |
+          Implementare le classi base per il Domain layer:
+
+          BaseEntity: classe astratta con Id (Guid), CreatedAt, UpdatedAt.
+          Tutte le entità erediteranno da questa classe.
+
+          ISoftDelete: interface per soft delete (IsDeleted, DeletedAt).
+          Permette di "eliminare" record senza DELETE fisico.
+
+          IAuditable: interface per audit trail (CreatedBy, UpdatedBy).
+          Traccia chi ha creato/modificato ogni record.
+        status: done
+        labels:
+          - domain
+        subtasks:
+          - Create BaseEntity.cs (Id Guid, CreatedAt, UpdatedAt)
+          - Create ISoftDelete.cs (IsDeleted bool, DeletedAt DateTime?)
+          - Create IAuditable.cs (CreatedBy string?, UpdatedBy string?)
+
+      - id: task-2-2
+        title: "Create domain exceptions"
+        description: |
+          Implementare eccezioni di dominio per gestione errori strutturata:
+
+          DomainException: errori di business logic generici (HTTP 422)
+          NotFoundException: risorsa non trovata (HTTP 404)
+          ValidationException: errori di validazione con dizionario errori (HTTP 400)
+          ForbiddenException: accesso negato a risorsa (HTTP 403)
+
+          Queste eccezioni verranno intercettate dal middleware e convertite
+          in risposte HTTP con formato ProblemDetails (RFC 7807).
+        status: done
+        labels:
+          - domain
+        subtasks:
+          - Create DomainException.cs (base exception for business errors)
+          - Create NotFoundException.cs (with entity name and key)
+          - Create ValidationException.cs (with errors dictionary)
+          - Create ForbiddenException.cs (access denied)
+
+  - id: phase-3
+    name: "Phase 3: Application Layer"
+    tasks:
+      - id: task-3-1
+        title: "Setup Application layer structure"
+        description: |
+          Configurare l'Application layer con interfacce e patterns:
+
+          IApplicationDbContext: contratto per il DbContext EF Core.
+          L'Application non conosce i dettagli di persistenza.
+
+          ICurrentUserService: accesso all'utente autenticato corrente.
+          Usato per audit trail e autorizzazione.
+
+          Result<T>: pattern per gestire errori senza eccezioni.
+          Rende esplicito che un'operazione può fallire.
+
+          DependencyInjection: registra FluentValidation (validazione input)
+          e Mapster (object mapping) con auto-scan dell'assembly.
+        status: done
+        labels:
+          - application
+        subtasks:
+          - Create IApplicationDbContext interface
+          - Create ICurrentUserService interface (UserId, Email, IsAuthenticated)
+          - Create Result and Result<T> pattern classes
+          - Configure FluentValidation with assembly scanning
+          - Configure Mapster with assembly scanning
+
+  - id: phase-4
+    name: "Phase 4: Infrastructure Layer"
+    tasks:
+      - id: task-4-1
+        title: "Setup EF Core and DbContext"
+        description: |
+          Implementare la persistenza con Entity Framework Core:
+
+          ApplicationDbContext: implementa IApplicationDbContext.
+          Configura DbSet per le entità e applica configurazioni.
+
+          AuditableInterceptor: SaveChangesInterceptor che popola
+          automaticamente CreatedBy/UpdatedBy usando ICurrentUserService.
+
+          SoftDeleteInterceptor: intercetta Delete e lo converte in
+          Update con IsDeleted=true e DeletedAt popolato.
+
+          Query Filter globale per escludere record soft-deleted.
+        status: done
+        labels:
+          - infrastructure
+        subtasks:
+          - Create ApplicationDbContext implementing IApplicationDbContext
+          - Create AuditableInterceptor (auto-fill CreatedBy/UpdatedBy)
+          - Create SoftDeleteInterceptor (convert Delete to Update)
+          - Configure global query filter for soft delete
+          - Create entity configurations with Fluent API
+
+      - id: task-4-2
+        title: "Setup Identity and JWT"
+        description: |
+          Implementare autenticazione con ASP.NET Core Identity e JWT:
+
+          ApplicationUser: estende IdentityUser con proprietà custom.
+
+          JwtService: genera e valida JWT tokens.
+          Configura claims, expiration, refresh tokens.
+
+          IdentityService: implementa registrazione, login, gestione utenti.
+          Wrappa ASP.NET Core Identity con interfaccia pulita.
+
+          CurrentUserService: implementa ICurrentUserService.
+          Estrae UserId/Email da HttpContext e JWT claims.
+        status: done
+        labels:
+          - infrastructure
+          - security
+        subtasks:
+          - Create ApplicationUser extending IdentityUser
+          - Configure Identity in DbContext
+          - Create JwtService (generate/validate tokens)
+          - Create JwtSettings configuration class
+          - Create IdentityService (register, login, user management)
+          - Create CurrentUserService implementing ICurrentUserService
+
+  - id: phase-5
+    name: "Phase 5: WebApi Layer"
+    tasks:
+      - id: task-5-1
+        title: "Setup WebApi project"
+        description: |
+          Configurare il layer di presentazione WebApi:
+
+          Program.cs: configurazione DI, middleware pipeline, CORS.
+          Chiama AddApplicationServices() e AddInfrastructureServices().
+
+          ExceptionHandlingMiddleware: intercetta eccezioni di dominio
+          e le converte in risposte HTTP con ProblemDetails.
+          Mappa: ValidationException->400, NotFoundException->404,
+          ForbiddenException->403, DomainException->422, Exception->500.
+
+          Swagger/OpenAPI: documentazione API con JWT auth support.
+
+          AuthController: endpoints per register, login, refresh token.
+        status: done
+        labels:
+          - webapi
+        subtasks:
+          - Configure Program.cs with DI and middleware pipeline
+          - Create ExceptionHandlingMiddleware with ProblemDetails
+          - Configure Swagger/OpenAPI with JWT Bearer auth
+          - Configure CORS policy
+          - Create AuthController (register, login, refresh)
+          - Create appsettings.json with JwtSettings section
+
+  - id: phase-6
+    name: "Phase 6: Hangfire"
+    tasks:
+      - id: task-6-1
+        title: "Setup Hangfire"
+        description: |
+          Configurare Hangfire per background jobs:
+
+          NuGet packages: Hangfire.Core, Hangfire.SqlServer,
+          Hangfire.AspNetCore per integrazione con ASP.NET Core.
+
+          Storage: SQL Server con schema separato [HangFire].
+
+          Dashboard: UI per monitorare jobs, protetta da autenticazione.
+
+          Job types supportati: Fire-and-forget, Delayed, Recurring.
+
+          Esempio job: CleanupExpiredTokensJob per pulizia periodica.
+        status: done
+        labels:
+          - infrastructure
+          - jobs
+        subtasks:
+          - Add Hangfire NuGet packages
+          - Configure Hangfire with SQL Server storage
+          - Setup Hangfire dashboard with authorization
+          - Create IBackgroundJobService interface
+          - Create example recurring job (CleanupExpiredTokensJob)
+
+  - id: phase-7
+    name: "Phase 7: Docker"
+    tasks:
+      - id: task-7-1
+        title: "Create Docker configuration"
+        description: |
+          Containerizzare l'applicazione con Docker:
+
+          Dockerfile: multi-stage build per ottimizzare immagine.
+          Stage 1: build con SDK image.
+          Stage 2: runtime con ASP.NET runtime image.
+
+          docker-compose.yml: orchestrazione container.
+          Servizi: webapi, sqlserver, (opzionale) redis.
+          Configurazione volumes per persistenza dati.
+
+          .dockerignore: esclude bin, obj, .git, etc.
+
+          Environment variables per connection strings e secrets.
+        status: done
+        labels:
+          - devops
+        subtasks:
+          - Create Dockerfile with multi-stage build
+          - Create docker-compose.yml (webapi + sqlserver)
+          - Create .dockerignore
+          - Configure environment variables
+          - Add health check endpoint
+
+  - id: phase-8
+    name: "Phase 8: Testing & Documentation"
+    tasks:
+      - id: task-8-1
+        title: "Setup unit tests"
+        description: |
+          Configurare test suite con xUnit:
+
+          Packages: xUnit, FluentAssertions, NSubstitute (mocking).
+
+          Test Application layer in isolamento.
+          Mock di IApplicationDbContext e altri servizi.
+
+          Naming convention: MethodName_Scenario_ExpectedResult.
+
+          Code coverage con Coverlet.
+        status: done
+        labels:
+          - testing
+        subtasks:
+          - Add xUnit, FluentAssertions, NSubstitute packages
+          - Create test base classes with common setup
+          - Add example validator tests
+          - Add example service tests with mocked dependencies
+          - Configure code coverage with Coverlet
+
+      - id: task-8-2
+        title: "Create documentation"
+        description: |
+          Creare documentazione progetto:
+
+          CLAUDE.md: istruzioni per Claude Code.
+          Descrive struttura progetto, convenzioni, comandi utili.
+
+          README.md: documentazione per sviluppatori.
+          Getting started, architettura, API reference, deployment.
+
+          API docs: generati automaticamente da Swagger/OpenAPI.
+        status: done
+        labels:
+          - docs
+        subtasks:
+          - Create CLAUDE.md with project conventions
+          - Update README.md with architecture overview
+          - Document API endpoints
+          - Add getting started guide
+
+  - id: phase-9
+    name: "Phase 9: Frontend Project Setup"
+    tasks:
+      - id: task-9-1
+        title: "Initialize Next.js project"
+        description: |
+          Setup progetto Next.js 15 con TypeScript:
+
+          Stack tecnologico scelto:
+          - Next.js 15 con App Router (SSR/SSG, file-based routing)
+          - React Query 5 per server state management
+          - MUI 6 per UI components
+          - Axios per HTTP client con interceptors
+
+          Motivazione scelte:
+          - Next.js vs CRA: ottimizzazioni automatiche, SSR out-of-box
+          - MUI vs Tailwind: componenti enterprise-ready, design system completo
+          - React Query vs Redux: caching automatico, no boilerplate
+
+          Struttura progetto: Hybrid Pragmatico
+          - features/: business logic per feature
+          - components/: tutti i componenti UI condivisi
+          - lib/: utilities e configurazioni
+        status: done
+        labels:
+          - frontend
+          - setup
+        subtasks:
+          - Create Next.js project with TypeScript
+          - Install MUI 6, React Query 5, Axios
+          - Configure folder structure (features/, components/, lib/)
+          - Setup path aliases in tsconfig.json
+          - Configure MUI theme and providers
+
+  - id: phase-10
+    name: "Phase 10: API Layer & Auth Feature"
+    tasks:
+      - id: task-10-1
+        title: "Create API layer"
+        description: |
+          Implementare layer API con Axios:
+
+          lib/axios.ts: istanza Axios configurata con:
+          - Base URL da environment variables
+          - Request interceptor per aggiungere JWT token
+          - Response interceptor per auto-refresh token
+          - Error handling centralizzato
+
+          Pattern Adapter: isola l'applicazione dai dettagli HTTP.
+          Se cambiamo client (fetch, axios, ky), modifiche solo qui.
+        status: done
+        labels:
+          - frontend
+          - api
+        subtasks:
+          - Create lib/axios.ts with interceptors
+          - Create lib/queryClient.ts for React Query
+          - Create lib/constants.ts for API URLs
+
+      - id: task-10-2
+        title: "Create auth feature"
+        description: |
+          Implementare feature autenticazione:
+
+          features/auth/types.ts: tipi TypeScript per auth
+          features/auth/api.ts: chiamate API (login, register, refresh)
+          features/auth/context.tsx: AuthContext con Provider Pattern
+          features/auth/hooks.ts: useAuth, useUser custom hooks
+
+          Pattern usati:
+          - Provider Pattern: stato globale auth senza prop drilling
+          - Custom Hooks: logica riutilizzabile
+          - Adapter Pattern: api.ts nasconde dettagli HTTP
+        status: done
+        labels:
+          - frontend
+          - auth
+        subtasks:
+          - Create features/auth/types.ts
+          - Create features/auth/api.ts
+          - Create features/auth/context.tsx
+          - Create features/auth/hooks.ts
+
+  - id: phase-11
+    name: "Phase 11: Auth UI Components"
+    tasks:
+      - id: task-11-1
+        title: "Create auth components and pages"
+        description: |
+          Implementare UI per autenticazione:
+
+          components/auth/:
+          - LoginForm.tsx: form login con validazione
+          - RegisterForm.tsx: form registrazione
+          - AuthGuard.tsx: protezione route autenticate
+
+          app/(auth)/:
+          - login/page.tsx: pagina login
+          - register/page.tsx: pagina registrazione
+
+          Pattern Container/Presentational:
+          - Form: presentational, riceve handlers via props
+          - Page: container, connette form a hooks e routing
+        status: done
+        labels:
+          - frontend
+          - auth
+          - ui
+        subtasks:
+          - Create components/auth/LoginForm.tsx
+          - Create components/auth/RegisterForm.tsx
+          - Create components/auth/AuthGuard.tsx
+          - Create app/(auth)/login/page.tsx
+          - Create app/(auth)/register/page.tsx
+
+  - id: phase-12
+    name: "Phase 12: Dashboard Layout"
+    tasks:
+      - id: task-12-1
+        title: "Create dashboard layout components"
+        description: |
+          Implementare layout per area autenticata:
+
+          components/layout/:
+          - Sidebar.tsx: navigazione laterale con MUI Drawer
+          - Header.tsx: top bar con user menu
+          - DashboardLayout.tsx: composizione layout completo
+
+          app/(dashboard)/layout.tsx: layout condiviso
+          Usa AuthGuard per proteggere tutte le route dashboard.
+
+          Responsive design: sidebar collassa su mobile.
+        status: done
+        labels:
+          - frontend
+          - layout
+          - ui
+        subtasks:
+          - Create components/layout/Sidebar.tsx
+          - Create components/layout/Header.tsx
+          - Create components/layout/DashboardLayout.tsx
+          - Create app/(dashboard)/layout.tsx
+
+  - id: phase-13
+    name: "Phase 13: Dashboard Pages"
+    tasks:
+      - id: task-13-1
+        title: "Create dashboard and profile pages"
+        description: |
+          Implementare pagine dashboard:
+
+          app/(dashboard)/dashboard/page.tsx:
+          - Pagina home con statistiche placeholder
+          - Cards con metriche di esempio
+
+          app/(dashboard)/profile/page.tsx:
+          - Visualizzazione dati profilo utente
+          - Form modifica profilo (opzionale)
+
+          Usa React Query per fetch dati utente.
+          Pattern: pagine sono container, delegano UI a components/.
+        status: done
+        labels:
+          - frontend
+          - dashboard
+          - ui
+        subtasks:
+          - Create features/dashboard/types.ts
+          - Create features/profile/api.ts and hooks.ts
+          - Create app/(dashboard)/dashboard/page.tsx
+          - Create app/(dashboard)/profile/page.tsx
+
+  - id: phase-14
+    name: "Phase 14: Frontend Documentation"
+    tasks:
+      - id: task-14-1
+        title: "Update ARCHITECTURE.md"
+        description: |
+          Aggiornare documentazione con sezione Frontend:
+
+          Sezione 12: Frontend Architecture
+          - 12.1 Technology Summary con motivazioni
+          - 12.2 Decisioni architetturali e trade-offs
+          - 12.3 Struttura progetto dettagliata
+          - 12.4 Pattern utilizzati
+          - 12.5 Flusso autenticazione
+
+          Includere motivazioni per ogni scelta:
+          - Perché Next.js vs alternatives
+          - Perché React Query invece di Redux
+          - Perché Hybrid structure invece di feature-only
+        status: done
+        labels:
+          - frontend
+          - docs
+        subtasks:
+          - Add Section 12 to ARCHITECTURE.md
+          - Document technology choices with motivations
+          - Document project structure
+          - Document authentication flow

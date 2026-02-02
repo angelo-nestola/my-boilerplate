@@ -10,6 +10,8 @@ Questo documento descrive le scelte architetturali della solution **CleanApi**, 
 
 ## Summary
 
+### Backend
+
 | Categoria | Scelta |
 |-----------|--------|
 | Framework | .NET 9 |
@@ -34,6 +36,17 @@ Questo documento descrive le scelte architetturali della solution **CleanApi**, 
 | API Versioning | No |
 | Health Checks | No |
 | Multi-tenancy | No |
+
+### Frontend
+
+| Categoria | Scelta |
+|-----------|--------|
+| Framework | Next.js 15 (App Router) |
+| UI Library | MUI 6 |
+| State Management | React Query 5 + Context |
+| HTTP Client | Axios |
+| Language | TypeScript |
+| Structure | Hybrid Pragmatico |
 
 ---
 
@@ -730,10 +743,259 @@ Funzionalità **non incluse** nel boilerplate ma facilmente aggiungibili:
 
 ---
 
-## 10. Changelog
+## 12. Frontend Architecture
+
+### 12.1 Summary
+
+| Categoria | Scelta | Motivazione |
+|-----------|--------|-------------|
+| Framework | Next.js 15 (App Router) | SSR/SSG out-of-box, routing file-based, ottimizzazioni automatiche |
+| UI Library | MUI 6 | Componenti enterprise-ready, design system completo, alta produttività |
+| State Management | React Query 5 + Context | Server state separato da UI state, caching automatico, no boilerplate Redux |
+| HTTP Client | Axios | Interceptors per token refresh, error handling centralizzato |
+| Structure | Hybrid Pragmatico | Bilanciamento tra semplicità e scalabilità |
+
+### 12.2 Decisioni Architetturali
+
+#### 12.2.1 Perché Next.js invece di Create React App
+
+| Aspetto | CRA | Next.js | Scelta |
+|---------|-----|---------|--------|
+| Server-Side Rendering | Manual setup | Built-in | ✅ Next.js |
+| File-based Routing | No | Yes | ✅ Next.js |
+| Image Optimization | Manual | Automatic | ✅ Next.js |
+| Bundle Optimization | Basic | Advanced | ✅ Next.js |
+
+**Motivazione**: Next.js fornisce ottimizzazioni out-of-box che con CRA richiederebbero configurazione manuale significativa.
+
+#### 12.2.2 Perché React Query invece di Redux
+
+| Aspetto | Redux | React Query | Scelta |
+|---------|-------|-------------|--------|
+| Boilerplate | Alto | Minimo | ✅ React Query |
+| Server State Caching | Manual | Automatic | ✅ React Query |
+| Background Refetching | Manual | Built-in | ✅ React Query |
+| Optimistic Updates | Complex | Simple | ✅ React Query |
+| DevTools | Good | Excellent | ✅ React Query |
+
+**Motivazione**: Redux eccelle per UI state complesso, ma per questo progetto il 90%+ dello state è server state (dati da API). React Query gestisce questo caso d'uso molto meglio con zero boilerplate.
+
+#### 12.2.3 Perché MUI invece di Tailwind CSS
+
+| Aspetto | Tailwind | MUI | Scelta |
+|---------|----------|-----|--------|
+| Componenti Pronti | No | Si | ✅ MUI |
+| Design System | Manual | Built-in | ✅ MUI |
+| Accessibilità | Manual | Built-in | ✅ MUI |
+| Produttività | Media | Alta | ✅ MUI |
+| Bundle Size | Piccolo | Medio | Tailwind |
+
+**Motivazione**: Per un dashboard enterprise, MUI fornisce componenti completi (DataGrid, DatePicker, Dialog) che con Tailwind andrebbero implementati da zero.
+
+#### 12.2.4 Perché Hybrid invece di Full Feature-based
+
+| Struttura | Pro | Contro |
+|-----------|-----|--------|
+| Full Feature-based | Isolamento totale | Duplicazione, overhead per poche features |
+| Component-only | Semplicità | Difficile scalare |
+| **Hybrid** | **Bilanciamento** | **Richiede disciplina** |
+
+**Motivazione**: Con solo 3-4 features (auth, dashboard, profile), una struttura full feature-based porterebbe overhead non giustificato. L'approccio ibrido separa logica (features/) da UI (components/) mantenendo chiarezza.
+
+### 12.3 Pattern Utilizzati
+
+```mermaid
+flowchart TD
+    subgraph "Presentation Layer"
+        P[Pages]
+        C[Components]
+    end
+
+    subgraph "Feature Layer"
+        H[Hooks]
+        CTX[Context]
+        API[API Functions]
+    end
+
+    subgraph "Infrastructure Layer"
+        AX[Axios Instance]
+        QC[Query Client]
+    end
+
+    P --> C
+    P --> H
+    C --> H
+    H --> CTX
+    H --> API
+    API --> AX
+    H --> QC
+```
+
+| Pattern | Implementazione | Motivazione |
+|---------|-----------------|-------------|
+| **Provider Pattern** | AuthContext, Providers | Stato globale auth senza prop drilling |
+| **Custom Hooks** | useAuth, useUser, useLogin | Logica riutilizzabile, separation of concerns |
+| **Adapter Pattern** | lib/axios.ts, features/*/api.ts | Isola HTTP details, facilita testing e swap |
+| **Container/Presentational** | Pages (container) + Components (presentational) | Separazione responsabilità |
+
+### 12.4 Struttura Progetto
+
+```
+frontend/
+├── src/
+│   ├── app/                      # Next.js App Router (SOLO routing)
+│   │   ├── (auth)/               # Route group per auth (no layout dashboard)
+│   │   │   ├── login/page.tsx
+│   │   │   ├── register/page.tsx
+│   │   │   └── layout.tsx
+│   │   ├── (dashboard)/          # Route group per area autenticata
+│   │   │   ├── dashboard/page.tsx
+│   │   │   ├── profile/page.tsx
+│   │   │   └── layout.tsx        # Applica DashboardLayout + AuthGuard
+│   │   ├── layout.tsx            # Root layout con Providers
+│   │   └── page.tsx              # Redirect a login o dashboard
+│   │
+│   ├── features/                 # Business logic per feature
+│   │   ├── auth/
+│   │   │   ├── types.ts          # TypeScript types
+│   │   │   ├── api.ts            # API calls
+│   │   │   ├── context.tsx       # AuthContext + AuthProvider
+│   │   │   ├── hooks.ts          # useAuth, useLogin, useLogout
+│   │   │   └── index.ts          # Barrel export
+│   │   ├── dashboard/
+│   │   └── profile/
+│   │
+│   ├── components/               # TUTTI i componenti UI
+│   │   ├── auth/
+│   │   │   ├── LoginForm.tsx
+│   │   │   ├── RegisterForm.tsx
+│   │   │   └── AuthGuard.tsx
+│   │   ├── layout/
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── Header.tsx
+│   │   │   └── DashboardLayout.tsx
+│   │   └── ui/                   # Componenti generici riutilizzabili
+│   │
+│   ├── lib/                      # Utilities e configurazioni
+│   │   ├── axios.ts              # Axios instance con interceptors
+│   │   ├── queryClient.ts        # React Query client config
+│   │   └── constants.ts          # API URLs, route paths
+│   │
+│   ├── providers/                # Context providers wrapper
+│   │   ├── ThemeProvider.tsx
+│   │   ├── QueryProvider.tsx
+│   │   └── index.tsx             # Providers composition
+│   │
+│   └── theme/                    # MUI theme customization
+│       └── theme.ts
+│
+├── .env.local                    # Environment variables
+└── package.json
+```
+
+### 12.5 Flusso Autenticazione
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant P as Page
+    participant AG as AuthGuard
+    participant AC as AuthContext
+    participant API as API Layer
+    participant BE as Backend
+
+    rect rgb(240, 240, 240)
+        Note over U,BE: Login Flow
+        U->>P: Visit /login
+        P->>AC: login(credentials)
+        AC->>API: authApi.login()
+        API->>BE: POST /api/auth/login
+        BE-->>API: {accessToken, refreshToken}
+        API->>API: Store tokens in localStorage
+        API-->>AC: Success
+        AC->>API: authApi.getProfile()
+        API->>BE: GET /api/user/profile
+        BE-->>API: User data
+        AC->>AC: setUser(profile)
+        AC-->>P: Redirect to /dashboard
+    end
+
+    rect rgb(240, 240, 240)
+        Note over U,BE: Protected Route Access
+        U->>P: Visit /dashboard
+        P->>AG: Check auth
+        AG->>AC: isAuthenticated?
+        AC-->>AG: Yes + User data
+        AG-->>P: Render children
+    end
+
+    rect rgb(240, 240, 240)
+        Note over U,BE: Token Refresh (Automatic)
+        U->>P: API Request
+        P->>API: Request with expired token
+        API->>BE: Request
+        BE-->>API: 401 Unauthorized
+        API->>API: Interceptor catches 401
+        API->>BE: POST /api/auth/refresh
+        BE-->>API: New tokens
+        API->>API: Update localStorage
+        API->>BE: Retry original request
+        BE-->>API: Success
+        API-->>P: Response
+    end
+```
+
+### 12.6 Axios Interceptors
+
+```typescript
+// Request interceptor - aggiunge token
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor - auto refresh token
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // Refresh token e retry
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+### 12.7 Environment Variables
+
+| Variabile | Descrizione | Default |
+|-----------|-------------|---------|
+| `NEXT_PUBLIC_API_URL` | URL backend API | `https://localhost:7268` |
+
+### 12.8 Comandi Sviluppo
+
+```bash
+# Sviluppo
+cd frontend && npm run dev
+
+# Build produzione
+npm run build
+
+# Lint
+npm run lint
+```
+
+---
+
+## 13. Changelog
 
 | Versione | Data | Modifiche |
 |----------|------|-----------|
+| 2.0 | 2026-02-02 | Aggiunta sezione Frontend Architecture (Next.js, MUI, React Query) |
 | 1.4 | 2026-01-30 | Aggiunta sezione TrelloSync Tool |
 | 1.3 | 2026-01-30 | Aggiunto Summary con tutte le scelte in formato minimal |
 | 1.2 | 2026-01-30 | Stile diagrammi Mermaid semplificato |
@@ -742,8 +1004,9 @@ Funzionalità **non incluse** nel boilerplate ma facilmente aggiungibili:
 
 ---
 
-## 11. Riferimenti
+## 14. Riferimenti
 
+### Backend
 - [Clean Architecture - Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [ASP.NET Core Documentation](https://docs.microsoft.com/en-us/aspnet/core/)
 - [Entity Framework Core](https://docs.microsoft.com/en-us/ef/core/)
@@ -752,3 +1015,9 @@ Funzionalità **non incluse** nel boilerplate ma facilmente aggiungibili:
 - [Serilog](https://serilog.net/)
 - [Hangfire](https://www.hangfire.io/)
 - [RFC 7807 - Problem Details](https://tools.ietf.org/html/rfc7807)
+
+### Frontend
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Query (TanStack Query)](https://tanstack.com/query/latest)
+- [MUI (Material UI)](https://mui.com/)
+- [Axios](https://axios-http.com/)
