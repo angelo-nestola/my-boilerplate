@@ -46,15 +46,15 @@ apiClient.interceptors.response.use(
           refreshToken,
         });
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
 
         // Store new tokens
-        localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+        localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
         localStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
 
         // Retry original request
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         }
         return apiClient(originalRequest);
       } catch (refreshError) {

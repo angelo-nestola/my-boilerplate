@@ -3,6 +3,7 @@
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from '@/theme';
+import ThemeRegistry from './EmotionCacheProvider';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -10,9 +11,11 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </MuiThemeProvider>
+    <ThemeRegistry>
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </ThemeRegistry>
   );
 }

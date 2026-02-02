@@ -23,9 +23,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Mark as mounted (client-side only)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Check authentication on mount
   useEffect(() => {
+    if (!mounted) return;
+
     const checkAuth = async () => {
       if (authApi.hasStoredTokens()) {
         try {
@@ -41,7 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     checkAuth();
-  }, []);
+  }, [mounted]);
 
   const login = useCallback(async (credentials: LoginRequest) => {
     setIsLoading(true);
