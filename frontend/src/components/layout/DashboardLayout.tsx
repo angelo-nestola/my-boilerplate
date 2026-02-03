@@ -37,7 +37,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
           }),
         }}
       >
-        <Toolbar /> {/* Spacer for fixed AppBar */}
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 56 } }} /> {/* Spacer for fixed AppBar */}
         {children}
       </Box>
     </Box>

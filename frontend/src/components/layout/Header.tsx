@@ -57,16 +57,16 @@ export function Header() {
           easing: muiTheme.transitions.easing.sharp,
           duration: muiTheme.transitions.duration.enteringScreen,
         }),
-        backdropFilter: 'blur(8px)',
-        bgcolor: (theme) =>
-          theme.palette.mode === 'dark'
-            ? theme.palette.background.paper
-            : alpha(theme.palette.background.paper, 0.9),
-        borderBottom: '1px solid',
-        borderColor: 'divider',
+        bgcolor: 'background.default',
+        borderBottom: 'none',
       }}
     >
-      <Toolbar>
+      <Toolbar
+        sx={{
+          minHeight: { xs: 56, sm: 56 },
+          px: { xs: 2, sm: 2 },
+        }}
+      >
         {/* Mobile menu button */}
         <IconButton
           color="inherit"
@@ -75,40 +75,30 @@ export function Header() {
           sx={{
             mr: 2,
             display: { md: 'none' },
-            color: 'text.primary',
+            color: 'text.secondary',
           }}
         >
           <MenuIcon />
         </IconButton>
 
-        {/* Page title - can be dynamic */}
-        <Typography
-          variant="h6"
-          noWrap
-          component="div"
-          sx={{
-            flexGrow: 1,
-            fontWeight: 600,
-            color: 'text.primary',
-          }}
-        >
-          Dashboard
-        </Typography>
+        {/* Spacer */}
+        <Box sx={{ flexGrow: 1 }} />
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {/* Theme Toggle */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          {/* Theme Toggle - in rilievo */}
           <Tooltip title={isDark ? 'Light mode' : 'Dark mode'}>
             <IconButton
               onClick={toggleTheme}
               sx={{
-                color: 'text.secondary',
+                bgcolor: (theme) => alpha(theme.palette.text.primary, 0.05),
+                color: 'text.primary',
                 '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
                   color: 'primary.main',
                 },
               }}
             >
-              {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+              {isDark ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
             </IconButton>
           </Tooltip>
 
@@ -118,21 +108,22 @@ export function Header() {
             sx={{
               display: { xs: 'none', sm: 'block' },
               color: 'text.secondary',
+              ml: 1,
             }}
           >
             {user?.email}
           </Typography>
 
-          {/* User avatar */}
-          <IconButton onClick={handleMenuOpen}>
+          {/* User avatar - in rilievo */}
+          <IconButton onClick={handleMenuOpen} sx={{ ml: 0.5 }}>
             <Avatar
               sx={{
-                width: 36,
-                height: 36,
+                width: 32,
+                height: 32,
                 bgcolor: 'primary.main',
                 color: 'primary.contrastText',
                 fontWeight: 600,
-                fontSize: '0.875rem',
+                fontSize: '0.8rem',
               }}
             >
               {userInitials}
