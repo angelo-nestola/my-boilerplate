@@ -1,42 +1,58 @@
 'use client';
 
-import { useState } from 'react';
-import { Box, Toolbar } from '@mui/material';
-import { Sidebar, DRAWER_WIDTH } from './Sidebar';
+import { Box, Toolbar, useTheme } from '@mui/material';
+import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { SidebarProvider, useSidebar } from './SidebarContext';
 import { AuthGuard } from '@/components/auth';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+/**
+ * Inner layout component that uses sidebar context
+ */
+function DashboardLayoutInner({ children }: DashboardLayoutProps) {
+  const theme = useTheme();
+  const { sidebarWidth } = useSidebar();
 
   return (
-    <AuthGuard>
-      <Box sx={{ display: 'flex' }}>
-        <Header onMenuClick={handleDrawerToggle} />
-        <Sidebar open={mobileOpen} onClose={handleDrawerToggle} />
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <Header />
+      <Sidebar />
 
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            p: 3,
-            width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-            minHeight: '100vh',
-            bgcolor: 'background.default',
-          }}
-        >
-          <Toolbar /> {/* Spacer for fixed AppBar */}
-          {children}
-        </Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${sidebarWidth}px)` },
+          ml: { md: `${sidebarWidth}px` },
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+          transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+        }}
+      >
+        <Toolbar /> {/* Spacer for fixed AppBar */}
+        {children}
       </Box>
+    </Box>
+  );
+}
+
+/**
+ * Main DashboardLayout that wraps everything with providers
+ */
+export function DashboardLayout({ children }: DashboardLayoutProps) {
+  return (
+    <AuthGuard>
+      <SidebarProvider>
+        <DashboardLayoutInner>{children}</DashboardLayoutInner>
+      </SidebarProvider>
     </AuthGuard>
   );
 }

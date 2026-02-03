@@ -1,5 +1,9 @@
 using System.Text;
 using CleanApi.Application.Common.Interfaces;
+using CleanApi.Application.Features.Projects;
+using CleanApi.Application.Features.TaskCategories;
+using CleanApi.Application.Features.Tasks;
+using CleanApi.Application.Features.Users;
 using CleanApi.Infrastructure.BackgroundJobs;
 using CleanApi.Infrastructure.Data;
 using CleanApi.Infrastructure.Data.Interceptors;
@@ -88,6 +92,10 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<JwtService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITaskCategoryService, TaskCategoryService>();
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<ITaskService, TaskService>();
 
         // Hangfire
         services.AddHangfire(config => config

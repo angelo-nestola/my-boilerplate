@@ -4,6 +4,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { authApi } from './api';
 import { useAuthContext } from './context';
 import type { LoginRequest, RegisterRequest, User } from './types';
+import { useToast } from '@/components/ui';
+
+function getErrorMessage(error: unknown): string {
+  const err = error as { response?: { data?: { error?: string } }; message?: string };
+  return err.response?.data?.error || err.message || 'An error occurred';
+}
 
 // Query keys
 export const authKeys = {
@@ -41,12 +47,17 @@ export function useUser() {
 export function useLogin() {
   const queryClient = useQueryClient();
   const { login } = useAuthContext();
+  const { showSuccess, showError } = useToast();
 
   return useMutation({
     mutationFn: (credentials: LoginRequest) => login(credentials),
     onSuccess: () => {
       // Invalidate user queries after login
       queryClient.invalidateQueries({ queryKey: authKeys.all });
+      showSuccess('Welcome back!');
+    },
+    onError: (error) => {
+      showError(getErrorMessage(error));
     },
   });
 }
@@ -57,11 +68,16 @@ export function useLogin() {
 export function useRegister() {
   const queryClient = useQueryClient();
   const { register } = useAuthContext();
+  const { showSuccess, showError } = useToast();
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => register(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.all });
+      showSuccess('Account created successfully!');
+    },
+    onError: (error) => {
+      showError(getErrorMessage(error));
     },
   });
 }
@@ -72,10 +88,12 @@ export function useRegister() {
 export function useLogout() {
   const queryClient = useQueryClient();
   const { logout } = useAuthContext();
+  const { showInfo } = useToast();
 
   return () => {
     logout();
     // Clear all cached data on logout
     queryClient.clear();
+    showInfo('You have been logged out');
   };
 }

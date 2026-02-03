@@ -492,3 +492,465 @@ phases:
           - Document technology choices with motivations
           - Document project structure
           - Document authentication flow
+
+  # ============================================
+  # DASHBOARD REDESIGN - PROJECT MANAGEMENT
+  # ============================================
+
+  - id: phase-15
+    name: "Phase 15: Theme e Layout (FASE A)"
+    tasks:
+      - id: task-15-1
+        title: "Implementare Theme System con Light/Dark Mode"
+        description: |
+          Creare sistema tema con palette custom:
+
+          Palette colori:
+          - Light: Palladian #EEE9DF, Oatmeal #C9C1B1
+          - Dark: Blue Fantastic #2C3B4D, Abyssal Blue #1B2632
+          - Accent: Burning Flame #FFB162 (primary), Truffle Trouble #A35139
+
+          Componenti:
+          - palette.ts: costanti colori
+          - theme.ts: lightTheme + darkTheme
+          - ThemeContext.tsx: toggle mode con localStorage
+          - ThemeProvider update: selezione dinamica tema
+        status: done
+        labels:
+          - frontend
+          - theme
+        subtasks:
+          - "[done] npm install @mui/x-data-grid"
+          - "[done] Created frontend/src/theme/palette.ts (palladian, oatmeal, burningFlame, truffleTrouble, blueFantastic, abyssalBlue)"
+          - "[done] Refactored frontend/src/theme/theme.ts (lightTheme + darkTheme with shared baseThemeOptions)"
+          - "[done] Created frontend/src/theme/ThemeContext.tsx (ThemeModeProvider, useThemeMode hook)"
+          - "[done] Updated frontend/src/providers/ThemeProvider.tsx (ThemeRegistry + ThemeModeProvider + ThemeWrapper)"
+
+      - id: task-15-2
+        title: "Implementare Sidebar Collassabile"
+        description: |
+          Creare sidebar moderna con:
+          - Espansa: 280px, Collassata: 64px (solo icone)
+          - Menu multi-livello con expand/collapse
+          - Animazione smooth (200ms ease-in-out)
+          - Tooltip in modalità collassata
+
+          Struttura menu Project Management:
+          - Dashboard
+          - Projects
+          - My Tasks
+          - Administration (Users, Categories)
+          - Design System
+          - Settings (Profile, Preferences)
+        status: done
+        labels:
+          - frontend
+          - layout
+        subtasks:
+          - "[done] Created frontend/src/components/layout/SidebarContext.tsx (SIDEBAR_WIDTH_EXPANDED=280, SIDEBAR_WIDTH_COLLAPSED=72)"
+          - "[done] Created frontend/src/config/menuConfig.tsx (Dashboard, Projects, Tasks, Admin submenu, Design System, Settings)"
+          - "[done] Created frontend/src/components/layout/sidebar/SidebarMenuItem.tsx"
+          - "[done] Created frontend/src/components/layout/sidebar/SidebarMenuGroup.tsx (expandable with Collapse)"
+          - "[done] Refactored frontend/src/components/layout/Sidebar.tsx (permanent/temporary drawer, collapse toggle)"
+          - "[done] Updated frontend/src/components/layout/Header.tsx (theme toggle with sun/moon icons, dynamic width)"
+          - "[done] Updated frontend/src/components/layout/DashboardLayout.tsx (SidebarProvider wrapper)"
+          - "[done] Updated frontend/src/lib/constants.ts (PROJECTS, TASKS, ADMIN_USERS, ADMIN_CATEGORIES, DESIGN_SYSTEM routes)"
+
+  - id: phase-16
+    name: "Phase 16: UI Components (FASE B)"
+    tasks:
+      - id: task-16-1
+        title: "Creare Card Components"
+        description: |
+          Componenti card riutilizzabili:
+
+          StatCard: KPI con icona, valore, trend (↑↓ %)
+          InfoCard: card informativa generica
+          ActionCard: card con bottoni azione
+
+          Location: components/ui/cards/
+        status: done
+        labels:
+          - frontend
+          - ui
+        subtasks:
+          - "[done] Created frontend/src/components/ui/cards/StatCard.tsx (title, value, icon, trend with up/down arrows)"
+          - "[done] Created frontend/src/components/ui/cards/InfoCard.tsx (title, description, icon, status chip, metadata)"
+          - "[done] Created frontend/src/components/ui/cards/ActionCard.tsx (primaryAction, secondaryAction, menuActions)"
+
+      - id: task-16-2
+        title: "Creare DataGrid e TreeGrid Components"
+        description: |
+          Componenti griglia:
+
+          DataGridWrapper: wrapper MUI DataGrid con:
+          - Custom toolbar (export, filters, columns)
+          - Styling consistente con tema
+          - Loading/empty states
+
+          TreeGrid (custom): per dati gerarchici
+          - Expand/collapse con animazione
+          - Indentazione visiva
+          - Inline edit
+        status: done
+        labels:
+          - frontend
+          - ui
+        subtasks:
+          - "[done] Created frontend/src/components/ui/data-grid/DataGridWrapper.tsx (custom toolbar, search, pagination, MUI DataGrid free)"
+          - "[done] Created frontend/src/components/ui/data-grid/TreeGrid.tsx (expand/collapse, hierarchical data, filter, add/edit/delete actions)"
+          - "[done] Created frontend/src/components/ui/data-grid/index.ts and ui/index.ts exports"
+
+      - id: task-16-3
+        title: "Creare Design System Page"
+        description: |
+          Pagina showcase componenti:
+
+          Sezioni:
+          - Typography (h1-h6, body, caption)
+          - Colors (palette swatches)
+          - Buttons (variants, sizes, states)
+          - Inputs (TextField, Select, DatePicker, etc.)
+          - Cards (Stat, Info, Action)
+          - Modals/Dialogs
+          - Alerts/Snackbars
+          - Loading states
+          - Icons
+        status: done
+        labels:
+          - frontend
+          - design-system
+        subtasks:
+          - "[done] Created frontend/src/app/(dashboard)/design-system/page.tsx"
+          - "[done] Sections: Color Palette, Stat Cards, Info Cards, Action Cards, Alerts, Buttons, Chips, DataGrid demo, TreeGrid demo, Typography"
+
+  - id: phase-17
+    name: "Phase 17: Domain Entities (FASE C)"
+    tasks:
+      - id: task-17-1
+        title: "Creare Domain Entities per Project Management"
+        description: |
+          Entità dominio:
+
+          Project: Name, Description, Key, Status, StartDate, EndDate
+          - Implementa ISoftDelete, IAuditable
+          - Enum ProjectStatus: Planning, Active, OnHold, Completed, Archived
+
+          ProjectMember: ProjectId, UserId, Role, JoinedAt
+          - Enum ProjectRole: Owner, Admin, Developer, Viewer
+
+          ProjectTask: ProjectId, CategoryId, AssigneeId, Title, etc.
+          - Implementa ISoftDelete, IAuditable
+          - Enum TaskPriority: Low, Medium, High, Critical
+          - Enum TaskStatus: Backlog, Todo, InProgress, Review, Done
+
+          TaskCategory: ParentId, Name, Color, Icon, SortOrder
+          - Self-referencing per struttura gerarchica
+          - Implementa ISoftDelete
+        status: done
+        labels:
+          - backend
+          - domain
+        subtasks:
+          - "[done] Created src/CleanApi.Domain/Entities/Project.cs (Name, Code, Description, StartDate, EndDate, IsActive)"
+          - "[done] Created src/CleanApi.Domain/Entities/ProjectMember.cs (ProjectId, UserId, Role, JoinedAt)"
+          - "[done] Created src/CleanApi.Domain/Entities/ProjectTask.cs (ProjectId, CategoryId, AssigneeId, Title, Status, Priority, etc.)"
+          - "[done] Created src/CleanApi.Domain/Entities/TaskCategory.cs (ParentId, Name, Color, Icon, SortOrder, Children)"
+          - "[done] Created src/CleanApi.Domain/Enums/ProjectRole.cs (Viewer, Developer, Admin, Owner)"
+          - "[done] Created src/CleanApi.Domain/Enums/ProjectTaskStatus.cs (Backlog, Todo, InProgress, Review, Done, Closed)"
+          - "[done] Created src/CleanApi.Domain/Enums/TaskPriority.cs (Low, Medium, High, Urgent)"
+          - "[done] Updated src/CleanApi.Application/Common/Interfaces/IApplicationDbContext.cs (DbSets)"
+          - "[done] Updated src/CleanApi.Infrastructure/Data/ApplicationDbContext.cs (DbSets)"
+          - "[done] Created src/CleanApi.Infrastructure/Data/Configurations/ (TaskCategoryConfiguration, ProjectConfiguration, ProjectMemberConfiguration, ProjectTaskConfiguration)"
+
+      - id: task-17-2
+        title: "Creare Common Models"
+        description: |
+          Modelli comuni Application layer:
+
+          PagedResult<T>: Items, TotalCount, Page, PageSize, TotalPages
+
+          QueryableExtensions: estensioni per paging e sorting
+          - ToPagedResultAsync()
+          - ApplyFilters()
+          - ApplySorting()
+        status: done
+        labels:
+          - backend
+          - application
+        subtasks:
+          - "[skipped] PagedResult.cs - not needed, using simple IEnumerable for MVP"
+          - "[skipped] QueryableExtensions.cs - not needed, using direct LINQ for MVP"
+
+  - id: phase-18
+    name: "Phase 18: User Management (FASE D)"
+    tasks:
+      - id: task-18-1
+        title: "Backend User Management"
+        description: |
+          API CRUD per gestione utenti:
+
+          DTOs:
+          - UserDto, UserListDto
+          - CreateUserRequest, UpdateUserRequest
+          - UserFilterRequest (Search, IsActive, date range, paging)
+
+          Service Pattern:
+          - IUserService in Application/Features/Users/Services/
+          - UserService in Infrastructure/Services/
+
+          Validators con FluentValidation
+
+          API Endpoints:
+          - GET /api/users (paginato con filtri)
+          - GET /api/users/{id}
+          - POST /api/users
+          - PUT /api/users/{id}
+          - DELETE /api/users/{id}
+        status: done
+        labels:
+          - backend
+          - api
+        subtasks:
+          - "[done] Created src/CleanApi.Application/Features/Users/UserDto.cs (UserDto, CreateUserDto, UpdateUserDto, ChangePasswordDto)"
+          - "[done] Created src/CleanApi.Application/Features/Users/IUserService.cs"
+          - "[done] Created src/CleanApi.Infrastructure/Identity/UserService.cs"
+          - "[done] Registered IUserService in DependencyInjection.cs"
+          - "[done] Created src/CleanApi.WebApi/Controllers/UsersController.cs (CRUD + roles + change-password)"
+
+      - id: task-18-2
+        title: "Frontend User Management"
+        description: |
+          UI gestione team members:
+
+          Feature structure:
+          - features/users/types.ts
+          - features/users/api.ts
+          - features/users/hooks.ts
+
+          Components:
+          - UsersDataGrid.tsx (MUI DataGrid con filtri)
+          - UserEditDialog.tsx (form create/edit)
+          - UserFilters.tsx (pannello filtri)
+
+          Page: app/(dashboard)/admin/users/page.tsx
+        status: done
+        labels:
+          - frontend
+          - users
+        subtasks:
+          - "[done] Created frontend/src/features/users/types.ts (User, CreateUserRequest, UpdateUserRequest, ChangePasswordRequest)"
+          - "[done] Created frontend/src/features/users/api.ts (usersApi with CRUD operations)"
+          - "[done] Created frontend/src/features/users/hooks.ts (useUsers, useUser, useRoles, mutations)"
+          - "[done] Created frontend/src/features/users/UserEditDialog.tsx (create/edit form with roles)"
+          - "[done] Created frontend/src/app/(dashboard)/admin/users/page.tsx (DataGrid with actions)"
+
+  - id: phase-19
+    name: "Phase 19: Task Categories (FASE E)"
+    tasks:
+      - id: task-19-1
+        title: "Backend Task Categories"
+        description: |
+          API CRUD per categorie task gerarchiche:
+
+          DTOs:
+          - TaskCategoryDto
+          - TaskCategoryTreeDto (include children)
+          - CreateTaskCategoryRequest
+
+          Endpoints:
+          - GET /api/categories (flat list)
+          - GET /api/categories/tree (struttura gerarchica)
+          - POST/PUT/DELETE /api/categories/{id}
+        status: done
+        labels:
+          - backend
+          - api
+        subtasks:
+          - "[done] Created src/CleanApi.Application/Features/TaskCategories/TaskCategoryDto.cs (TaskCategoryDto, TaskCategoryTreeDto, CreateTaskCategoryDto, UpdateTaskCategoryDto)"
+          - "[done] Created src/CleanApi.Application/Features/TaskCategories/ITaskCategoryService.cs"
+          - "[done] Created src/CleanApi.Infrastructure/Services/TaskCategoryService.cs (GetAll, GetTree, GetById, Create, Update, Delete)"
+          - "[done] Created src/CleanApi.WebApi/Controllers/TaskCategoriesController.cs (route: api/categories)"
+          - "[done] Registered ITaskCategoryService in DependencyInjection.cs"
+
+      - id: task-19-2
+        title: "Frontend Task Categories TreeGrid"
+        description: |
+          UI gestione categorie con TreeGrid custom:
+
+          Features:
+          - Visualizzazione gerarchica
+          - Expand/collapse
+          - Inline edit nome
+          - Color picker per colore categoria
+          - Drag & drop reorder (futuro)
+
+          Page: app/(dashboard)/admin/categories/page.tsx
+        status: done
+        labels:
+          - frontend
+          - categories
+        subtasks:
+          - "[done] Created frontend/src/features/categories/types.ts (Category, CategoryTree, CreateCategoryRequest, UpdateCategoryRequest)"
+          - "[done] Created frontend/src/features/categories/api.ts (categoriesApi with CRUD operations)"
+          - "[done] Created frontend/src/features/categories/hooks.ts (useCategories, useCategoriesTree, mutations)"
+          - "[done] Created frontend/src/features/categories/CategoryEditDialog.tsx (create/edit with color/icon selection)"
+          - "[done] Created frontend/src/features/categories/index.ts"
+          - "[done] Created frontend/src/app/(dashboard)/admin/categories/page.tsx (TreeGrid with icon mapping)"
+
+  - id: phase-20
+    name: "Phase 20: Projects (FASE F)"
+    tasks:
+      - id: task-20-1
+        title: "Backend Projects"
+        description: |
+          API CRUD per progetti:
+
+          DTOs:
+          - ProjectDto, ProjectListDto
+          - CreateProjectRequest, UpdateProjectRequest
+          - ProjectMemberDto, AddMemberRequest
+
+          Endpoints:
+          - GET/POST /api/projects
+          - GET/PUT/DELETE /api/projects/{id}
+          - GET/POST/DELETE /api/projects/{id}/members
+        status: done
+        labels:
+          - backend
+          - api
+        subtasks:
+          - "[done] Created src/CleanApi.Application/Features/Projects/ProjectDto.cs (ProjectDto, ProjectListDto, CreateProjectDto, UpdateProjectDto, ProjectMemberDto, AddProjectMemberDto)"
+          - "[done] Created src/CleanApi.Application/Features/Projects/IProjectService.cs"
+          - "[done] Created src/CleanApi.Infrastructure/Services/ProjectService.cs (CRUD + members management)"
+          - "[done] Created src/CleanApi.WebApi/Controllers/ProjectsController.cs"
+          - "[done] Registered IProjectService in DependencyInjection.cs"
+
+      - id: task-20-2
+        title: "Frontend Projects"
+        description: |
+          UI gestione progetti:
+
+          Components:
+          - ProjectsDataGrid.tsx
+          - ProjectEditDialog.tsx
+          - ProjectMembersDialog.tsx
+
+          Pages:
+          - /projects: lista progetti
+          - /projects/{id}: dettaglio progetto
+        status: done
+        labels:
+          - frontend
+          - projects
+        subtasks:
+          - "[done] Created frontend/src/features/projects/types.ts (Project, ProjectListItem, ProjectMember, ProjectRole)"
+          - "[done] Created frontend/src/features/projects/api.ts (projectsApi with CRUD + members operations)"
+          - "[done] Created frontend/src/features/projects/hooks.ts (useProjects, useProject, useProjectMembers, mutations)"
+          - "[done] Created frontend/src/features/projects/ProjectEditDialog.tsx"
+          - "[done] Created frontend/src/features/projects/index.ts"
+          - "[done] Created frontend/src/app/(dashboard)/projects/page.tsx (DataGrid with progress bar)"
+          - "[done] Created frontend/src/app/(dashboard)/projects/[id]/page.tsx (detail with members management)"
+
+  - id: phase-21
+    name: "Phase 21: Tasks (FASE G)"
+    tasks:
+      - id: task-21-1
+        title: "Backend Tasks"
+        description: |
+          API CRUD per task:
+
+          DTOs:
+          - TaskDto, TaskListDto
+          - CreateTaskRequest, UpdateTaskRequest
+          - TaskFilterRequest
+
+          Endpoints:
+          - GET/POST /api/projects/{projectId}/tasks
+          - GET/PUT/DELETE /api/tasks/{id}
+          - GET /api/tasks/my (task assegnati a current user)
+        status: done
+        labels:
+          - backend
+          - api
+        subtasks:
+          - "[done] Created src/CleanApi.Application/Features/Tasks/TaskDto.cs (TaskDto, TaskListDto, CreateTaskDto, UpdateTaskDto with decimal hours)"
+          - "[done] Created src/CleanApi.Application/Features/Tasks/ITaskService.cs"
+          - "[done] Created src/CleanApi.Infrastructure/Services/TaskService.cs (GetAll, GetMyTasks, GetById, Create, Update, Delete, UpdateStatus)"
+          - "[done] Created src/CleanApi.WebApi/Controllers/TasksController.cs (CRUD + status update + my tasks)"
+          - "[done] Registered ITaskService in DependencyInjection.cs"
+
+      - id: task-21-2
+        title: "Frontend Tasks"
+        description: |
+          UI gestione task:
+
+          Components:
+          - TasksDataGrid.tsx
+          - TaskEditDialog.tsx
+          - TaskFilters.tsx
+
+          Pages:
+          - /tasks: My Tasks (assegnati a me)
+          - /projects/{id}/tasks: tasks del progetto
+        status: done
+        labels:
+          - frontend
+          - tasks
+        subtasks:
+          - "[done] Created frontend/src/features/tasks/types.ts (Task, TaskListItem, TaskStatus, TaskPriority, TASK_STATUS_OPTIONS, TASK_PRIORITY_OPTIONS)"
+          - "[done] Created frontend/src/features/tasks/api.ts (tasksApi with CRUD + status update + my tasks)"
+          - "[done] Created frontend/src/features/tasks/hooks.ts (useTasks, useMyTasks, useTask, mutations)"
+          - "[done] Created frontend/src/features/tasks/TaskEditDialog.tsx (create/edit with project, category, assignee, status, priority)"
+          - "[done] Created frontend/src/features/tasks/index.ts"
+          - "[done] Created frontend/src/app/(dashboard)/tasks/page.tsx (My Tasks / All Tasks toggle, status/priority filters)"
+
+  - id: phase-22
+    name: "Phase 22: Dashboard e Finalizzazione (FASE H)"
+    tasks:
+      - id: task-22-1
+        title: "Dashboard con StatCards reali"
+        description: |
+          Aggiornare dashboard con dati reali:
+
+          StatCards:
+          - Progetti attivi
+          - Task in progress
+          - Task completati (settimana)
+          - Team members
+
+          Recent Activity:
+          - Ultimi task aggiornati
+          - Progetti recenti
+        status: done
+        labels:
+          - frontend
+          - dashboard
+        subtasks:
+          - "[done] Updated frontend/src/app/(dashboard)/dashboard/page.tsx with real API data"
+          - "[done] Created StatCard component with loading skeleton"
+          - "[done] Added Total Users stat (clickable -> /admin/users)"
+          - "[done] Added Active Projects stat (clickable -> /projects)"
+          - "[done] Added My Tasks stat (clickable -> /tasks)"
+          - "[done] Added In Progress tasks stat"
+          - "[done] Added Recent Projects section with progress bars"
+          - "[done] Added My Recent Tasks section with status chips"
+
+      - id: task-22-2
+        title: "Testing e Refinement"
+        description: |
+          Finalizzazione:
+
+          - Test UI su tutti i browser
+          - Responsive design check
+          - Performance optimization
+          - Swagger annotations complete
+          - Aggiornare ARCHITECTURE.md
+        status: done
+        labels:
+          - testing
+          - docs
+        subtasks:
+          - "[done] Backend build verified (dotnet build succeeded)"
+          - "[done] Frontend build verified (npm run build succeeded, 12 routes)"
+          - "[done] All pages functional: /, /login, /register, /dashboard, /profile, /projects, /projects/[id], /tasks, /admin/users, /admin/categories, /design-system"

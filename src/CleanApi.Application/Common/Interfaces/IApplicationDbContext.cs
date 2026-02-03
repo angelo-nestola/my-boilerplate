@@ -1,3 +1,4 @@
+using CleanApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CleanApi.Application.Common.Interfaces;
@@ -8,6 +9,26 @@ namespace CleanApi.Application.Common.Interfaces;
 /// </summary>
 public interface IApplicationDbContext
 {
+    /// <summary>
+    /// Task categories for organizing tasks.
+    /// </summary>
+    DbSet<TaskCategory> TaskCategories { get; }
+
+    /// <summary>
+    /// Projects containing tasks and members.
+    /// </summary>
+    DbSet<Project> Projects { get; }
+
+    /// <summary>
+    /// Project membership records.
+    /// </summary>
+    DbSet<ProjectMember> ProjectMembers { get; }
+
+    /// <summary>
+    /// Tasks within projects.
+    /// </summary>
+    DbSet<ProjectTask> ProjectTasks { get; }
+
     /// <summary>
     /// Saves all changes made in this context to the database.
     /// </summary>

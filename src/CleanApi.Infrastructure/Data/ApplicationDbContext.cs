@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using CleanApi.Application.Common.Interfaces;
 using CleanApi.Domain.Common;
+using CleanApi.Domain.Entities;
 using CleanApi.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         : base(options)
     {
     }
+
+    public DbSet<TaskCategory> TaskCategories => Set<TaskCategory>();
+    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
+    public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
