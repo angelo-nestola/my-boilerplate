@@ -58,7 +58,10 @@ export function Header() {
           duration: muiTheme.transitions.duration.enteringScreen,
         }),
         backdropFilter: 'blur(8px)',
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
+        bgcolor: (theme) =>
+          theme.palette.mode === 'dark'
+            ? theme.palette.background.paper
+            : alpha(theme.palette.background.paper, 0.9),
         borderBottom: '1px solid',
         borderColor: 'divider',
       }}

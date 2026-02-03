@@ -33,14 +33,14 @@ const baseThemeOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 8,
+          borderRadius: 6,
           fontWeight: 500,
         },
       },
@@ -54,21 +54,21 @@ const baseThemeOptions: ThemeOptions = {
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
         },
       },
     },
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 6,
         },
       },
     },
@@ -109,16 +109,16 @@ export const lightTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          borderRadius: 8,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          borderRadius: 8,
+          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
         },
       },
     },
@@ -127,6 +127,7 @@ export const lightTheme = createTheme({
         paper: {
           backgroundColor: '#FFFFFF',
           borderRight: '1px solid rgba(0, 0, 0, 0.08)',
+          borderRadius: 0,
         },
       },
     },
@@ -136,6 +137,7 @@ export const lightTheme = createTheme({
           backgroundColor: '#FFFFFF',
           color: lightPalette.text.primary,
           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          borderRadius: 0,
         },
       },
     },
@@ -176,8 +178,8 @@ export const darkTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           backgroundColor: palette.blueFantastic,
         },
       },
@@ -185,8 +187,8 @@ export const darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           backgroundColor: palette.blueFantastic,
         },
       },
@@ -196,6 +198,7 @@ export const darkTheme = createTheme({
         paper: {
           backgroundColor: palette.blueFantastic,
           borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: 0,
         },
       },
     },
@@ -204,6 +207,7 @@ export const darkTheme = createTheme({
         root: {
           backgroundColor: palette.blueFantastic,
           boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          borderRadius: 0,
         },
       },
     },

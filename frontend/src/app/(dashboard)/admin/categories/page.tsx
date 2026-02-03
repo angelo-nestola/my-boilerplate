@@ -19,7 +19,6 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ScienceIcon from '@mui/icons-material/Science';
 import EngineeringIcon from '@mui/icons-material/Engineering';
-import { DashboardLayout } from '@/components/layout';
 import { TreeGrid, TreeNode } from '@/components/ui/data-grid/TreeGrid';
 import { useCategoriesTree, useDeleteCategory, Category } from '@/features/categories';
 import { CategoryEditDialog } from '@/features/categories/CategoryEditDialog';
@@ -123,27 +122,26 @@ export default function CategoriesPage() {
   };
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4, height: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
-          Task Categories
-        </Typography>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600, mb: 2 }}>
+        Task Categories
+      </Typography>
 
-        <Box sx={{ flex: 1, minHeight: 0 }}>
-          <TreeGrid
-            title="Categories"
-            data={treeData}
-            loading={isLoading}
-            searchPlaceholder="Search categories..."
-            onAdd={handleAdd}
-            onAddChild={handleAddChild}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-            onRefresh={() => refetch()}
-            addButtonLabel="Add Category"
-            showItemCount
-          />
-        </Box>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <TreeGrid
+          title="Categories"
+          data={treeData}
+          loading={isLoading}
+          searchPlaceholder="Search categories..."
+          onAdd={handleAdd}
+          onAddChild={handleAddChild}
+          onEdit={handleEdit}
+          onDelete={handleDeleteClick}
+          onRefresh={() => refetch()}
+          addButtonLabel="Add Category"
+          showItemCount
+        />
+      </Box>
 
         {/* Edit Dialog */}
         <CategoryEditDialog
@@ -174,7 +172,6 @@ export default function CategoriesPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

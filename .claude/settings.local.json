@@ -40,7 +40,9 @@
       "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" build src/CleanApi.WebApi --no-restore)",
       "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" build /mnt/c/Users/angelo.nestola/Desktop/Personal/Development/BoilerPlate/src/CleanApi.WebApi --verbosity quiet)",
       "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" ef migrations add AddProjectManagement --project src/CleanApi.Infrastructure --startup-project src/CleanApi.WebApi)",
-      "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" ef database update:*)"
+      "Bash(\"/mnt/c/Program Files/dotnet/dotnet.exe\" ef database update:*)",
+      "Bash(ls:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

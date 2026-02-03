@@ -95,7 +95,6 @@ function CustomToolbar({
             variant="contained"
             startIcon={<AddIcon />}
             onClick={onAdd}
-            sx={{ borderRadius: 2 }}
           >
             {addButtonLabel}
           </Button>
@@ -125,7 +124,7 @@ function CustomToolbar({
           sx={{
             minWidth: 200,
             '& .MuiOutlinedInput-root': {
-              borderRadius: 2,
+              borderRadius: 1,
             },
           }}
         />
@@ -210,8 +209,9 @@ export function DataGridWrapper({
         flexDirection: 'column',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 2,
+        borderRadius: 1,
         overflow: 'hidden',
+        bgcolor: 'background.paper',
         ...sx,
       }}
     >

@@ -32,7 +32,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DashboardLayout } from '@/components/layout';
 import {
   useProject,
   useProjectMembers,
@@ -123,41 +122,36 @@ export default function ProjectDetailPage() {
 
   if (projectLoading) {
     return (
-      <DashboardLayout>
-        <Box sx={{ p: 3 }}>
-          <Skeleton variant="text" width={300} height={40} />
-          <Skeleton variant="rectangular" height={200} sx={{ mt: 3 }} />
-        </Box>
-      </DashboardLayout>
+      <Box>
+        <Skeleton variant="text" width={300} height={40} />
+        <Skeleton variant="rectangular" height={200} sx={{ mt: 2 }} />
+      </Box>
     );
   }
 
   if (!project) {
     return (
-      <DashboardLayout>
-        <Box sx={{ p: 3 }}>
-          <Alert severity="error">Project not found</Alert>
-          <Button startIcon={<ArrowBackIcon />} onClick={() => router.push('/projects')} sx={{ mt: 2 }}>
-            Back to Projects
-          </Button>
-        </Box>
-      </DashboardLayout>
+      <Box>
+        <Alert severity="error">Project not found</Alert>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => router.push('/projects')} sx={{ mt: 2 }}>
+          Back to Projects
+        </Button>
+      </Box>
     );
   }
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4 }}>
-        {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <IconButton onClick={() => router.push('/projects')}>
-            <ArrowBackIcon />
-          </IconButton>
-          <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {project.name}
-              </Typography>
+    <Box>
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <IconButton onClick={() => router.push('/projects')}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Box sx={{ flex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600 }}>
+              {project.name}
+            </Typography>
               <Chip label={project.code} color="primary" variant="outlined" />
               <Chip
                 label={project.isActive ? 'Active' : 'Inactive'}
@@ -377,7 +371,6 @@ export default function ProjectDetailPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

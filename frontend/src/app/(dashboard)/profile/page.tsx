@@ -21,7 +21,7 @@ export default function ProfilePage() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 4 }}>
+      <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600, mb: 3 }}>
         Profile
       </Typography>
 

@@ -18,7 +18,6 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import { DashboardLayout } from '@/components/layout';
 import { DataGridWrapper } from '@/components/ui';
 import { useUsers, useDeleteUser, useChangePassword, User } from '@/features/users';
 import { UserEditDialog } from '@/features/users/UserEditDialog';
@@ -148,23 +147,22 @@ export default function UsersPage() {
   ];
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 3 }}>
-          Team Members
-        </Typography>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600, mb: 2 }}>
+        Team Members
+      </Typography>
 
-        <Box sx={{ height: 600 }}>
-          <DataGridWrapper
-            rows={users}
-            columns={columns}
-            loading={isLoading}
-            searchPlaceholder="Search users..."
-            onAdd={handleAdd}
-            onRefresh={() => refetch()}
-            addButtonLabel="Add User"
-          />
-        </Box>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <DataGridWrapper
+          rows={users}
+          columns={columns}
+          loading={isLoading}
+          searchPlaceholder="Search users..."
+          onAdd={handleAdd}
+          onRefresh={() => refetch()}
+          addButtonLabel="Add User"
+        />
+      </Box>
 
         {/* Edit Dialog */}
         <UserEditDialog
@@ -229,7 +227,6 @@ export default function UsersPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

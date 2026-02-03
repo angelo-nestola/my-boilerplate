@@ -26,7 +26,7 @@ function DashboardLayoutInner({ children }: DashboardLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: 2,
           width: { md: `calc(100% - ${sidebarWidth}px)` },
           ml: { md: `${sidebarWidth}px` },
           minHeight: '100vh',

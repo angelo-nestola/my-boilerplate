@@ -21,7 +21,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout } from '@/components/layout';
 import { DataGridWrapper } from '@/components/ui';
 import { useProjects, useDeleteProject, useProject, ProjectListItem } from '@/features/projects';
 import { ProjectEditDialog } from '@/features/projects/ProjectEditDialog';
@@ -177,33 +176,31 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Projects
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAdd}
-            sx={{ borderRadius: 2 }}
-          >
-            New Project
-          </Button>
-        </Box>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600 }}>
+          Projects
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAdd}
+        >
+          New Project
+        </Button>
+      </Box>
 
-        <Box sx={{ height: 600 }}>
-          <DataGridWrapper
-            rows={projects}
-            columns={columns}
-            loading={isLoading}
-            searchPlaceholder="Search projects..."
-            onAdd={handleAdd}
-            onRefresh={() => refetch()}
-            addButtonLabel="New Project"
-          />
-        </Box>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <DataGridWrapper
+          rows={projects}
+          columns={columns}
+          loading={isLoading}
+          searchPlaceholder="Search projects..."
+          onAdd={handleAdd}
+          onRefresh={() => refetch()}
+          addButtonLabel="New Project"
+        />
+      </Box>
 
         {/* Edit Dialog */}
         <ProjectEditDialog
@@ -236,7 +233,6 @@ export default function ProjectsPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

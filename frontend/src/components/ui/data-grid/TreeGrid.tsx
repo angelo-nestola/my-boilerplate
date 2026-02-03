@@ -396,8 +396,9 @@ export function TreeGrid({
         flexDirection: 'column',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 2,
+        borderRadius: 1,
         overflow: 'hidden',
+        bgcolor: 'background.paper',
         ...sx,
       }}
     >
@@ -442,7 +443,7 @@ export function TreeGrid({
             sx={{
               minWidth: 200,
               '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
+                borderRadius: 1,
               },
             }}
           />
@@ -466,7 +467,6 @@ export function TreeGrid({
               startIcon={<AddIcon />}
               onClick={onAdd}
               size="small"
-              sx={{ borderRadius: 2 }}
             >
               {addButtonLabel}
             </Button>

@@ -23,7 +23,6 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { DashboardLayout } from '@/components/layout';
 import { DataGridWrapper } from '@/components/ui';
 import {
   useMyTasks,
@@ -221,22 +220,20 @@ export default function TasksPage() {
   ];
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              {viewMode === 'my' ? 'My Tasks' : 'All Tasks'}
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAdd}
-              sx={{ borderRadius: 2 }}
-            >
-              New Task
-            </Button>
-          </Box>
+    <Box sx={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600 }}>
+            {viewMode === 'my' ? 'My Tasks' : 'All Tasks'}
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAdd}
+          >
+            New Task
+          </Button>
+        </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <FormControl size="small" sx={{ minWidth: 120 }}>
               <InputLabel>View</InputLabel>
@@ -284,19 +281,19 @@ export default function TasksPage() {
               </>
             )}
           </Box>
-        </Box>
+      </Box>
 
-        <Box sx={{ height: 600 }}>
-          <DataGridWrapper
-            rows={tasks}
-            columns={columns}
-            loading={isLoading}
-            searchPlaceholder="Search tasks..."
-            onAdd={handleAdd}
-            onRefresh={() => refetch()}
-            addButtonLabel="New Task"
-          />
-        </Box>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <DataGridWrapper
+          rows={tasks}
+          columns={columns}
+          loading={isLoading}
+          searchPlaceholder="Search tasks..."
+          onAdd={handleAdd}
+          onRefresh={() => refetch()}
+          addButtonLabel="New Task"
+        />
+      </Box>
 
         {/* Edit Dialog */}
         <TaskEditDialog
@@ -326,7 +323,6 @@ export default function TasksPage() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

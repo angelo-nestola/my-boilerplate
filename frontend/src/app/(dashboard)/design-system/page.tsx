@@ -24,7 +24,6 @@ import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import BuildIcon from '@mui/icons-material/Build';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { GridColDef } from '@mui/x-data-grid';
-import { DashboardLayout } from '@/components/layout';
 import {
   StatCard,
   InfoCard,
@@ -129,7 +128,7 @@ function ColorSwatch({ name, value, textColor }: { name: string; value: string; 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Box sx={{ mb: 6 }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+      <Typography variant="h5" color="text.primary" sx={{ fontWeight: 700, mb: 3 }}>
         {title}
       </Typography>
       {children}
@@ -142,14 +141,13 @@ export default function DesignSystemPage() {
   const [selectedTreeNode, setSelectedTreeNode] = useState<string | number | null>(null);
 
   return (
-    <DashboardLayout>
-      <Box sx={{ pb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          Design System
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Component showcase and style guide for CleanApi
-        </Typography>
+    <Box>
+      <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600, mb: 1 }}>
+        Design System
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Component showcase and style guide for CleanApi
+      </Typography>
 
         {/* Color Palette */}
         <Section title="Color Palette">
@@ -420,7 +418,6 @@ export default function DesignSystemPage() {
             <Typography variant="overline" display="block">overline text</Typography>
           </Paper>
         </Section>
-      </Box>
-    </DashboardLayout>
+    </Box>
   );
 }
