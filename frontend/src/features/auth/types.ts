@@ -30,6 +30,8 @@ export interface User {
   lastName?: string;
   emailConfirmed: boolean;
   createdAt: string;
+  personId?: string;
+  capabilities: string[];
 }
 
 export interface AuthState {

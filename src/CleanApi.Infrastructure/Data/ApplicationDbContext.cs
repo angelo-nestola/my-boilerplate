@@ -15,16 +15,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     {
     }
 
-    public DbSet<TaskCategory> TaskCategories => Set<TaskCategory>();
-    public DbSet<Project> Projects => Set<Project>();
-    public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
-    public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
+    public DbSet<Person> Persons => Set<Person>();
+    public DbSet<OrgUnit> OrgUnits => Set<OrgUnit>();
+    public DbSet<OrgRole> OrgRoles => Set<OrgRole>();
+    public DbSet<OrgAssignment> OrgAssignments => Set<OrgAssignment>();
+    public DbSet<Capability> Capabilities => Set<Capability>();
+    public DbSet<RoleCapability> RoleCapabilities => Set<RoleCapability>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        // Apply all configurations from this assembly
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         // Configure global query filter for soft delete

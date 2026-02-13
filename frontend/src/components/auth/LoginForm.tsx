@@ -17,8 +17,8 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(process.env.NODE_ENV === 'development' ? 'admin@riskplatform.com' : '');
+  const [password, setPassword] = useState(process.env.NODE_ENV === 'development' ? 'Admin123!' : '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

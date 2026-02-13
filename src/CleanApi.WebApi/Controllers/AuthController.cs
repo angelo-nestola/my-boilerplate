@@ -77,12 +77,15 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("me")]
-    public IActionResult Me()
+    public IActionResult Me([FromServices] ICurrentUserService currentUser)
     {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-
-        return Ok(new { userId, email });
+        return Ok(new
+        {
+            userId = currentUser.UserId,
+            email = currentUser.Email,
+            personId = currentUser.PersonId,
+            capabilities = currentUser.Capabilities
+        });
     }
 }
 

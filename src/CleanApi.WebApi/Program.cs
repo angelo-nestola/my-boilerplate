@@ -2,12 +2,15 @@ using System.Text.Json.Serialization;
 using CleanApi.Application;
 using CleanApi.Infrastructure;
 using CleanApi.Infrastructure.BackgroundJobs;
+using CleanApi.Infrastructure.Data;
 using CleanApi.WebApi.Middleware;
 using Hangfire;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine("=== App starting ===");
 
 // Serilog
 builder.Host.UseSerilog((context, configuration) =>
@@ -29,9 +32,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "CleanApi",
+        Title = "CleanApi - Risk Management Platform",
         Version = "v1",
-        Description = "Clean Architecture API Boilerplate"
+        Description = "Risk Management Platform API"
     });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -74,7 +77,21 @@ builder.Services.AddCors(options =>
 // Health Checks
 builder.Services.AddHealthChecks();
 
+Console.WriteLine("=== Building app ===");
 var app = builder.Build();
+Console.WriteLine("=== App built ===");
+
+// Seed database
+try
+{
+    Console.WriteLine("=== Seeding... ===");
+    await DbSeeder.SeedDatabaseAsync(app.Services);
+    Console.WriteLine("=== Seed done ===");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"=== Seed FAILED: {ex.Message} ===");
+}
 
 // Middleware pipeline
 app.UseExceptionHandling();
@@ -101,9 +118,17 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 // Configure recurring jobs
-RecurringJob.AddOrUpdate<CleanupExpiredTokensJob>(
-    "cleanup-expired-tokens",
-    job => job.ExecuteAsync(),
-    Cron.Daily);
+try
+{
+    RecurringJob.AddOrUpdate<CleanupExpiredTokensJob>(
+        "cleanup-expired-tokens",
+        job => job.ExecuteAsync(),
+        Cron.Daily);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"=== Hangfire job FAILED: {ex.Message} ===");
+}
 
+Console.WriteLine("=== Starting app.Run() ===");
 app.Run();

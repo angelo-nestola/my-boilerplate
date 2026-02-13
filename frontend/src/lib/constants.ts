@@ -12,14 +12,12 @@ export const ROUTES = {
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
-  // Project Management
-  PROJECTS: '/projects',
-  PROJECT_DETAIL: '/projects/[id]',
-  PROJECT_TASKS: '/projects/[id]/tasks',
-  TASKS: '/tasks',
-  // Administration
-  ADMIN_USERS: '/admin/users',
-  ADMIN_CATEGORIES: '/admin/categories',
+  // Organization
+  ORGANIZATION: '/organization',
+  ORGANIZATION_CHART: '/organization/chart',
+  ORGANIZATION_UNITS: '/organization/units',
+  ORGANIZATION_PEOPLE: '/organization/people',
+  ORGANIZATION_ROLES: '/organization/roles',
   // Design System
   DESIGN_SYSTEM: '/design-system',
   // Settings
@@ -35,24 +33,25 @@ export const API_ENDPOINTS = {
     LOGOUT: '/api/auth/logout',
     ME: '/api/auth/me',
   },
-  USERS: {
-    LIST: '/api/users',
-    DETAIL: '/api/users/:id',
+  ORG_UNITS: {
+    LIST: '/api/org-units',
+    TREE: '/api/org-units/tree',
+    DETAIL: (id: string) => `/api/org-units/${id}`,
+    MEMBERS: (id: string) => `/api/org-units/${id}/members`,
   },
-  PROJECTS: {
-    LIST: '/api/projects',
-    DETAIL: '/api/projects/:id',
-    MEMBERS: '/api/projects/:id/members',
-    TASKS: '/api/projects/:id/tasks',
+  PERSONS: {
+    LIST: '/api/persons',
+    DETAIL: (id: string) => `/api/persons/${id}`,
+    ASSIGNMENTS: (id: string) => `/api/persons/${id}/assignments`,
+    ASSIGNMENT_DETAIL: (personId: string, id: string) => `/api/persons/${personId}/assignments/${id}`,
   },
-  TASKS: {
-    LIST: '/api/tasks',
-    DETAIL: '/api/tasks/:id',
-    MY_TASKS: '/api/tasks/my',
+  ORG_ROLES: {
+    LIST: '/api/org-roles',
+    CAPABILITIES: '/api/capabilities',
+    UPDATE_CAPABILITIES: (roleId: string) => `/api/org-roles/${roleId}/capabilities`,
   },
-  CATEGORIES: {
-    LIST: '/api/categories',
-    TREE: '/api/categories/tree',
-    DETAIL: '/api/categories/:id',
+  ORGANIZATION: {
+    DASHBOARD: '/api/organization/dashboard',
+    SANITY_CHECK: '/api/organization/sanity-check',
   },
 } as const;
